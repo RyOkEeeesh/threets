@@ -1,0 +1,37 @@
+{
+  "name": "can",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build:pug2html": "pug src/pug/ --hierarchy -o ./ -P",
+    "watch:pug2html": "pug src/pug/ --hierarchy -o ./ -w -P",
+    "compile:sass": "sass src/scss:css",
+    "prefix:css": "postcss css/*.css -u autoprefixer --dir css",
+    "watch:sass": "sass --watch src/scss:css",
+    "build:ts": "tsc --rootDir src/ts --outDir js",
+    "watch:ts": "tsc --rootDir src/ts --outDir js -w",
+    "vite": "npx vite",
+    "build": "npm-run-all --parallel build:pug2html compile:sass prefix:css build:ts",
+    "watch:all": "npm-run-all --parallel watch:pug2html watch:sass watch:ts",
+    "all:vite": "npm-run-all --parallel watch:pug2html watch:sass vite"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/three": "^0.176.0",
+    "autoprefixer": "^10.4.21",
+    "chokidar-cli": "^3.0.0",
+    "postcss": "^8.5.3",
+    "postcss-cli": "^11.0.1",
+    "pug-cli": "github:pugjs/pug-cli#master",
+    "sass": "^1.89.0",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "dependencies": {
+    "npm-run-all": "^4.1.5",
+    "three": "^0.176.0"
+  }
+}
