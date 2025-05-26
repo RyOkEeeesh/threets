@@ -1,0 +1,22 @@
+{
+  // 詳細情報は次を確認してください: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run pug",
+      "runtimeExecutable": "pug",
+      "cwd": "${workspaceFolder}",
+      "args": []
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run vite",
+      "runtimeExecutable": "vite",
+      "cwd": "${workspaceFolder}",
+      "args": []
+    }
+  ]
+}
