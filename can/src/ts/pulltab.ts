@@ -53,12 +53,12 @@ import * as THREE from 'three';
     let [x, y] = [0, 0]
 
     shape.moveTo(x, y);
-    shape.lineTo(x += 1, y =  12);
-    shape.bezierCurveTo(x, y, x + 1, y += 4, x += 5, y)
-    shape.bezierCurveTo(x, y, x + 4, y, x += 5, y -= 4)
-    shape.lineTo(x += 1, y = 0);
-    shape.lineTo(5, 0);
-    shape.lineTo(0, 0); // 閉じる
+    shape.lineTo(x, y = 5);
+    shape.bezierCurveTo(x, y, x, y += 6, x += 5, y)
+    shape.bezierCurveTo(x, y, x += 5, y, x, y -= 6)
+    shape.lineTo(x, y = 0);
+    shape.bezierCurveTo(x, y, x + 2, y - 10, x -= 5, y -= 10)
+    shape.bezierCurveTo(x, y, x - 7, y, x -= 5, y += 10)
 
     // 2. ShapeGeometryで中身を埋める
     const geometry = new THREE.ShapeGeometry(shape);
