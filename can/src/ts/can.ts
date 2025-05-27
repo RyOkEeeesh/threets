@@ -193,7 +193,7 @@ import * as THREE from 'three';
         )
       ];
 
-      console.log(tmpPosisiotn);
+      console.log(points);
 
       const geometry = new THREE.LatheGeometry(points.map(mapVec2), segments);
       const mesh = new THREE.Mesh(geometry, material);

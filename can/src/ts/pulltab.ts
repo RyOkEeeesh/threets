@@ -93,10 +93,7 @@ const outerGeometry = new THREE.ShapeGeometry(enlargedShape);
 
 const positionAttr = outerGeometry.attributes.position;
 
-console.log(positionAttr)
-
 positionAttr.needsUpdate = true;
-
 
 const geometry = new THREE.ShapeGeometry(shape);
 
