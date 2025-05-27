@@ -22,7 +22,7 @@ import * as THREE from 'three';
   const scene = new THREE.Scene();
 
   const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 10000);
-  camera.position.z = 200;
+  camera.position.z = 50;
 
   const controls = new OrbitControls(camera, canvas);
   controls.enableDamping = true;
@@ -31,15 +31,6 @@ import * as THREE from 'three';
   const light1 = new THREE.DirectionalLight(0xffffff, 0.5);
   light1.position.set(200, 0, 0);
   scene.add(light1);
-
-  const light2 = new THREE.DirectionalLight(0xffffff, 0.5);
-  light2.position.set(0, 200, 0);
-  scene.add(light2);
-
-  const light3 = new THREE.DirectionalLight(0xffffff, 0.5);
-  light3.position.set(0, -200, 0);
-  scene.add(light3);
-
 
 
   const makeCan = (segments = 64 /* 2進数 */) => {
@@ -62,10 +53,10 @@ import * as THREE from 'three';
     let [x, y] = [0, 0]
 
     shape.moveTo(x, y);
-    shape.lineTo(x += 2, y =  14);
+    shape.lineTo(x += 1, y =  12);
     shape.bezierCurveTo(x, y, x + 1, y += 4, x += 5, y)
     shape.bezierCurveTo(x, y, x + 4, y, x += 5, y -= 4)
-    shape.lineTo(x += 2, y = 0);
+    shape.lineTo(x += 1, y = 0);
     shape.lineTo(5, 0);
     shape.lineTo(0, 0); // 閉じる
 
