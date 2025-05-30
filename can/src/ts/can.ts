@@ -57,7 +57,6 @@ import * as THREE from 'three';
     const vec2 = (x: number, y: number) => new THREE.Vector2(x, y);
     const mapVec2 = (v: THREE.Vector2) =>  vec2(round(v.x), round(v.y));
     const getSegments = (split: number = 1, max: number = 4) => Math.max(Math.floor(Math.sqrt(segments)) / split, max);
-
     const curve = (start: THREE.Vector2, point: THREE.Vector2, end: THREE.Vector2, seg = getSegments()) => 
       new THREE.QuadraticBezierCurve(
         start,
