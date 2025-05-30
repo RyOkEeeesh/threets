@@ -182,7 +182,7 @@ const makeCan = (segments = 64 /* 2進数 */) => {
           vec2(x -= 0.3, ++y),
         ), ...curve(
           vec2(x, y),
-          vec2(x / 2, y += 1.5),
+          vec2(x / 2, y += 0.5),
           vec2(0, y)
         )
       ];
@@ -199,15 +199,30 @@ const makeCan = (segments = 64 /* 2進数 */) => {
       const p: THREE.Vector2[] = shape.getPoints().map(p => new THREE.Vector2(p.x, p.y));
       for (let i: number = 0; i < p.length; i++) shape.lineTo(-p[p.length - 1 - i].x, p[p.length - 1 - i].y)
 
-      
       const extrudeSettings = {
-        depth: 100, // 厚みを持たせる
+        depth: 0.9,
         bevelEnabled: false
       };
+
       const pullGeometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
+      // 頂点を操作して逆台形に変形
+      const position = pullGeometry.attributes.position;
+      const vertex = new THREE.Vector3();
+
+      for (let i = 0; i < position.count; i++) {
+        vertex.fromBufferAttribute(position, i);
+
+        const scale = 1 - (vertex.z / extrudeSettings.depth) * 0.15;
+        vertex.x *= scale;
+        vertex.y *= scale;
+
+        position.setXYZ(i, vertex.x, vertex.y, vertex.z);
+      }
+
+      pullGeometry.computeVertexNormals();
+
       const pMesh = new THREE.Mesh(pullGeometry, material);
-      // pMesh.rotateX(90 * Math.PI / 2);
-      // pMesh.position.set(0, height - 50, 0);
       pMesh.updateMatrixWorld();
 
 
@@ -228,12 +243,16 @@ const makeCan = (segments = 64 /* 2進数 */) => {
 
       const pMeshClone = pMesh.clone();
       pMeshClone.geometry = pMesh.geometry.clone().applyMatrix4(pMesh.matrixWorld);
-      pMeshClone.position.set(0, height - 50, 0);
-      pMeshClone.rotation.set(0, 90 * Math.PI / 2, 0);
-      pMeshClone.scale.set(1, 1, 1);
+      pMeshClone.position.set(0, height - 2.9, 0);
+      pMeshClone.rotation.set(Math.PI / 2, 0, 0);
+      pMeshClone.scale.set(2.4, 2.4, 1)
+      pMeshClone.updateMatrixWorld(true);
+
+      // group.add(pMeshClone);
+
 
       // CSG演算
-      const resultMesh = CSG.union(meshClone, pMeshClone);
+      const resultMesh = CSG.subtract(meshClone, pMeshClone);
       console.log(resultMesh.geometry.attributes.position.count);
 
 
@@ -288,32 +307,6 @@ const makeCan = (segments = 64 /* 2進数 */) => {
 //   return offsetPoints;
 // }
 
-
-// const scale = 0.5;
-
-// const originalPoints = shape.getPoints();
-// const scaledPoints = offsetShapePoints(originalPoints, scale);
-
-// const enlargedShape = new THREE.Shape();
-// enlargedShape.moveTo(scaledPoints[0].x, scaledPoints[0].y);
-// for (let i = 1; i < scaledPoints.length; i++) enlargedShape.lineTo(scaledPoints[i].x, scaledPoints[i].y);
-// enlargedShape.holes.push(shape);
-
-// const outerGeometry = new THREE.ShapeGeometry(enlargedShape);
-
-// const positionAttr = outerGeometry.attributes.position;
-
-// positionAttr.needsUpdate = true;
-
-// const geometry = new THREE.ShapeGeometry(shape);
-
-// // // メッシュを作成
-// const outerMesh = new THREE.Mesh(outerGeometry, new THREE.MeshBasicMaterial({wireframe: true}));
-// const innerMesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({wireframe: true}));
-
-// const result = CSG.union(innerMesh, outerMesh);
-
-// scene.add(innerMesh);
 scene.add(makeCan());
 
 window.onresize = () => {
