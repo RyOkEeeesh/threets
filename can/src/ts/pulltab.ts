@@ -200,7 +200,7 @@ const makeCan = (segments = 64 /* 2進数 */) => {
       for (let i: number = 0; i < p.length; i++) shape.lineTo(-p[p.length - 1 - i].x, p[p.length - 1 - i].y)
 
       const extrudeSettings = {
-        depth: 0.9,
+        depth: 0.85,
         bevelEnabled: false
       };
 
