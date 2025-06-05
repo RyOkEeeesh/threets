@@ -65,15 +65,15 @@ import * as THREE from 'three';
       ).getPoints(seg);
 
     const group = new THREE.Group();
-    const material = new THREE.MeshBasicMaterial({wireframe: true});
-    // const material = new THREE.MeshPhysicalMaterial({
-    //   color: 0xb0b0b0, // アルミっぽいグレー
-    //   metalness: 1.0, // 金属感を最大に
-    //   roughness: 0.3, // 少しザラつきのある表面
-    //   reflectivity: 0.8, // 高い反射率
-    //   clearcoat: 0.1, // 表面のコーティング感
-    //   clearcoatRoughness: 0.05
-    // });
+    // const material = new THREE.MeshBasicMaterial({wireframe: true});
+    const material = new THREE.MeshPhysicalMaterial({
+      color: 0xb0b0b0, // アルミっぽいグレー
+      metalness: 1.0, // 金属感を最大に
+      roughness: 0.3, // 少しザラつきのある表面
+      reflectivity: 0.8, // 高い反射率
+      clearcoat: 0.1, // 表面のコーティング感
+      clearcoatRoughness: 0.05
+    });
 
 
     // 上面設定
