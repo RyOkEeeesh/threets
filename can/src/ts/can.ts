@@ -53,12 +53,10 @@ import * as THREE from 'three';
     let x = 0;
     let y = 0;
 
-    // const p: THREE.Vector2 = new THREE.Vector2();
     const round = (n: number) => Math.round(n * 1000) / 1000;
     const vec2 = (x: number, y: number) => new THREE.Vector2(x, y);
     const mapVec2 = (v: THREE.Vector2) =>  vec2(round(v.x), round(v.y));
     const getSegments = (split: number = 1, max: number = 4) => Math.max(Math.floor(Math.sqrt(segments)) / split, max);
-
     const curve = (start: THREE.Vector2, point: THREE.Vector2, end: THREE.Vector2, seg = getSegments()) => 
       new THREE.QuadraticBezierCurve(
         start,
@@ -158,6 +156,8 @@ import * as THREE from 'three';
 
     } /* 上面 */ {
 
+      let tmpPosisiotn = {x, y}
+
       const points: THREE.Vector2[] = [
         vec2(x, y),
         ...curve(
@@ -186,11 +186,13 @@ import * as THREE from 'three';
           vec2(x, y + 1),
           vec2(x -= 0.3, ++y),
         ), ...curve(
-          vec2(x, y),
+          vec2(tmpPosisiotn.x = x, tmpPosisiotn.y = y),
           vec2(x / 2, y += 1.5),
           vec2(0, y)
         )
       ];
+
+      console.log(points);
 
       const geometry = new THREE.LatheGeometry(points.map(mapVec2), segments);
       const mesh = new THREE.Mesh(geometry, material);
@@ -203,7 +205,7 @@ import * as THREE from 'three';
     return group;
   }
 
-  scene.add(makeCan(128));
+  scene.add(makeCan());
 
   window.onresize = () => {
     const width = window.innerWidth;

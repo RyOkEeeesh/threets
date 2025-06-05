@@ -21,8 +21,12 @@ controls.dampingFactor = 0.2;
 
 // CSG用のジオメトリ作成
 const box = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshNormalMaterial());
+box.position.set(1, 0, 0); // 任意の位置に移動
 const sphere = new THREE.Mesh(new THREE.SphereGeometry(0.6, 32, 32), new THREE.MeshNormalMaterial());
-sphere.position.set(0.3, 0.3, 0.3);
+sphere.position.set(1, 0.3, 0.3);
+
+box.updateMatrix();
+sphere.updateMatrix();
 
 // CSG演算（減算）
 const result = CSG.subtract(box, sphere);
