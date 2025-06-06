@@ -15,6 +15,7 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+camera.position.z = 3;
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.2;
@@ -32,7 +33,6 @@ sphere.updateMatrix();
 const result = CSG.subtract(box, sphere);
 scene.add(result);
 
-camera.position.z = 3;
 
 // アニメーションループ
 function animate() {
