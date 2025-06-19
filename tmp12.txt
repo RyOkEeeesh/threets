@@ -388,6 +388,7 @@ export class Game extends App{
   clock: THREE.Clock = new THREE.Clock();
   deltaTime! :number;
 
+  // パドル移動を受け付ける
   acceptingInputPaddle: boolean = false;
 
   #pointStatus: {
@@ -422,13 +423,11 @@ export class Game extends App{
     speed: number,
     missChance: number,
     precision: number,
-    serviceToMoveCenter: boolean,
     predictedTargetX: number | null
   } = {
     speed: 0,
     missChance: 0,
     precision: 0,
-    serviceToMoveCenter: false,
     predictedTargetX: null
   }
 
@@ -500,13 +499,11 @@ export class Game extends App{
     super.addScene(this.ball);
   }
 
-  // ユーザのコントロールは後で別のクラスに移動
   initUserControl() {
     window.addEventListener('keydown', e => this.keyPress[e.code] = true);
     window.addEventListener('keyup', e => this.keyPress[e.code] = false);
   }
 
-  // パドルの移動数を引数0-1で取得し、加算移動するよう変更
   paddleMove(target: boolean) {
     if (!this.acceptingInputPaddle) return;
     const speed = 15 * this.deltaTime;
@@ -557,6 +554,13 @@ export class Game extends App{
     }
     return true;
   }
+
+  serveBallFromPaddle() {
+    if ( !this.refectPaddle(this.hasService()) ) this.ballVelocity.set(0, 0, this.ballSpeed);
+    this.#serveStatus.isServing = false;
+    this.#serveStatus.serveReady = false;
+  }
+
 
   gameBallFromPaddle(raycaster: THREE.Raycaster) {
     const paddles = [ this.myPaddle, this.enemyPaddle ];
@@ -643,12 +647,19 @@ export class Game extends App{
   }
 
   isServe() {
-    if (!this.#serveStatus.isServing || !this.#serveStatus.serveReady) return;
-    const elapsed = this.clock.getElapsedTime() - this.#serveStatus.serveStartTime;
-    if (this.keyPress['Space'] || elapsed > 10) {
-      this.#serveStatus.isServing = false;
-      this.#serveStatus.serveReady = false;
-      if ( !this.refectPaddle(this.hasService()) ) this.ballVelocity.set(0, 0, this.ballSpeed);
+    if (this.#serveStatus.isServing && this.#serveStatus.serveReady) {
+      const elapsed = this.clock.getElapsedTime() - this.#serveStatus.serveStartTime;
+      if (this.keyPress['Space'] || elapsed > 10) {
+        this.#serveStatus.isServing = false;
+        this.#serveStatus.serveReady = false;
+        const raycaster = new THREE.Raycaster(
+          this.ball.position,
+          this.ballVelocity.clone().normalize(),
+          0,
+          this.ballSpeed * this.deltaTime
+        );
+        this.serveBallFromPaddle();
+      }
     }
   }
 
@@ -668,9 +679,9 @@ export class Game extends App{
   async animateServePosition() {
   if (this.#serveStatus.isAnimatingServe) return;
 
-    this.#serveStatus.isAnimatingServe = true;
-    const paddle = this.hasService();
-    const ballSpeed = 30;
+  this.#serveStatus.isAnimatingServe = true;
+  const paddle = this.hasService();
+  const ballSpeed = 15;
 
     await new Promise(resolve => {
       const direction = this.#serveStatus.pointGetter ? 1 : -1;
@@ -719,6 +730,8 @@ export class Game extends App{
     this.#serveStatus.isAnimatingServe = false;
   }
 
+
+
   updateServeBall() {
     const paddle = this.hasService()
     const paddleBox = paddle.geometry.boundingBox!;
@@ -726,6 +739,7 @@ export class Game extends App{
   }
 
   reflector() {
+
     if (this.#serveStatus.getPoint) {
       this.ballSpeed = this.defBallSpeed;
       this.ballVelocity.set(0, 0, 0);
@@ -760,6 +774,7 @@ export class Game extends App{
         break;
       }
     }
+
   }
 
   createStretchEffect(center: THREE.Vector3, wallNormal: THREE.Vector3, wall: THREE.Mesh) {
@@ -779,7 +794,7 @@ export class Game extends App{
     const wallCenter = new THREE.Vector3();
     wall.getWorldPosition(wallCenter);
 
-    const wallDirection = wallTangent.clone();
+    const wallDirection = wallTangent.clone(); // 壁の横方向
     const halfLength = wallSize.x / 2;
     const wallStart = wallCenter.clone().add(wallDirection.clone().multiplyScalar(-halfLength));
     const wallEnd = wallCenter.clone().add(wallDirection.clone().multiplyScalar(halfLength));
@@ -815,10 +830,8 @@ export class Game extends App{
         const elapsed = performance.now() - startTime;
         const progress = elapsed / duration;
 
-        if (progress >= 1 || this.#serveStatus.getPoint) {
+        if (progress >= 1) {
           this.scene.remove(mesh);
-          mesh.geometry.dispose();
-          mesh.material.dispose();
           return;
         }
 
@@ -845,7 +858,6 @@ export class Game extends App{
     }
   }
 
-  // あとで別のクラスに移動する
   initAI(mode: 'easy'|'middle'|'hard') {
     if (mode === 'easy') {
       this.#AIStatus.speed = this.ballSpeed - 10;
@@ -868,10 +880,6 @@ export class Game extends App{
   }
 
   enemyPaddleAI() {
-    if (!this.#AIStatus.serviceToMoveCenter && this.#serveStatus.getPoint && this.#serveStatus.isServing) {
-      // TODO
-    }
-
     const speed = this.#AIStatus.speed * this.deltaTime;
     const paddleZ = this.enemyPaddle.position.z;
     const ballZ = this.ball.position.z;
@@ -909,7 +917,7 @@ export class Game extends App{
       this.paddleMove(true);
       this.isServe();
       this.enemyPaddleAI();
-    });
+    })
   }
 
 }
@@ -956,6 +964,7 @@ export const TC = {
   ) {
     target.updateMatrixWorld();
     let x: number, y: number, z: number;
+
     if (typeof scale === 'number') {
       x = y = z = scale;
     } else {
@@ -963,12 +972,14 @@ export const TC = {
       y = scale.y ?? target.scale.y;
       z = scale.z ?? target.scale.z;
     }
+
     target.scale.set(x, y, z);
     target.updateMatrixWorld();
   },
 
   centerObject(target: THREE.Object3D) {
     target.updateMatrixWorld();
+
     const box = new THREE.Box3().setFromObject(target);
     const center = new THREE.Vector3();
     box.getCenter(center);
